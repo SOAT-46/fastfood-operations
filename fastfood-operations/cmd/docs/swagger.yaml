@@ -1,0 +1,21 @@
+info:
+  contact:
+    email: postec8soatg46@gmail.com
+  description: The Fast-food Operations.
+  title: Fast-food Operations
+  version: 1.0.0
+paths:
+  /v1/orders:
+    post:
+      consumes:
+      - application/json
+      description: Insert a new Order
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Insert a new Order
+      tags:
+      - orders
+swagger: "2.0"

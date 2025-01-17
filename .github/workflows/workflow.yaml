@@ -1,0 +1,10 @@
+name: Build Image to Deploy in Docker HUB
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+
