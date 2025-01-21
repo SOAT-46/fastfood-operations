@@ -28,7 +28,7 @@ func CorsMiddleware() gin.HandlerFunc {
 }
 
 func GetRouters(corsFlag bool) *gin.Engine {
-	logger.Info("Setting up Routers")
+	logger.Info("Setting up Routes")
 
 	engine := gin.Default()
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
@@ -53,7 +53,7 @@ func GetRouters(corsFlag bool) *gin.Engine {
 		}
 	}
 
-	logger.Info("Routers setup completed")
+	logger.Info("Routes setup completed")
 
 	return engine
 }
