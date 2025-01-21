@@ -17,4 +17,5 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 
 ### Added
 
+- added Dockerfile to containerize the application
 - added project structure
