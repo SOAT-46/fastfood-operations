@@ -17,5 +17,9 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 
 ### Added
 
+- added `PUT /v1/orders/:id` endpoint to update an order
+- added `GET /v1/orders/:id` endpoint to get an order by the target ID
+- added `GET /v1/orders` endpoint to get all orders
+- added `POST /v1/orders` endpoint to create a new order
 - added Dockerfile to containerize the application
 - added project structure

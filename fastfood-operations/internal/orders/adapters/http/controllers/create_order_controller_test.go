@@ -1,9 +1,9 @@
-//go:build unit
-
 package controllers_test
 
 import (
 	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/controllers"
+	"github.com/SOAT-46/fastfood-operations/test/orders/adapters/http/requests/builders"
+	"github.com/SOAT-46/fastfood-operations/test/orders/application/usecases/doubles"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -12,24 +12,46 @@ import (
 )
 
 func TestCreateOrderController(t *testing.T) {
-	endpoint := "/v1/orders"
-	t.Run("should return status code CREATED (201)", func(t *testing.T) {
+	endpoint := "/orders"
+	t.Run("should create an order", func(t *testing.T) {
 		// given
 		gin.SetMode(gin.TestMode)
-
-		controller := controllers.NewCreateOrderController()
 		router := gin.New()
+
+		entity := builders.NewCreateOrderRequestBuilder().BuildRequest()
+		useCase := doubles.NewCreateOrderUseCaseStub().WithOnSuccess()
+		controller := controllers.NewCreateOrderController(useCase)
 
 		// when
 		router.POST(endpoint, controller.Execute)
 
-		req, err := http.NewRequest(http.MethodPost, endpoint, nil)
-
+		req, err := http.NewRequest(http.MethodPost, endpoint, entity)
 		recorder := httptest.NewRecorder()
 		router.ServeHTTP(recorder, req)
 
 		// then
+		assert.Equal(t, http.StatusCreated, recorder.Code)
 		assert.NoError(t, err, "no error in the request")
-		assert.Equal(t, http.StatusCreated, recorder.Code, "status code is 201")
+	})
+
+	t.Run("should return an error to create the order", func(t *testing.T) {
+		// given
+		gin.SetMode(gin.TestMode)
+		router := gin.New()
+
+		entity := builders.NewCreateOrderRequestBuilder().BuildRequest()
+		useCase := doubles.NewCreateOrderUseCaseStub().WithOnError()
+		controller := controllers.NewCreateOrderController(useCase)
+
+		// when
+		router.POST(endpoint, controller.Execute)
+
+		req, err := http.NewRequest(http.MethodPost, endpoint, entity)
+		recorder := httptest.NewRecorder()
+		router.ServeHTTP(recorder, req)
+
+		// then
+		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+		assert.NoError(t, err, "no error in the request")
 	})
 }

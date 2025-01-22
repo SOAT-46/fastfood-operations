@@ -12,9 +12,9 @@ COPY . .
 RUN go install github.com/google/wire/cmd/wire@latest
 RUN go generate ./...
 RUN go install github.com/swaggo/swag/cmd/swag@latest
-RUN swag init -g cmd/main/main.go # Adjust based on your main.go location
+RUN swag init -g cmd/main.go
 
-RUN go build -o main ./cmd/main
+RUN go build -o main ./cmd
 
 FROM alpine:latest
 
