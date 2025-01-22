@@ -1,0 +1,212 @@
+definitions:
+  CreateOrderRequest:
+    properties:
+      paymentId:
+        type: string
+      products:
+        items:
+          $ref: '#/definitions/ProductRequest'
+        type: array
+      userId:
+        type: string
+    required:
+    - paymentId
+    - products
+    type: object
+  ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  OrderItemResponse:
+    properties:
+      product:
+        type: integer
+      quantity:
+        type: integer
+    type: object
+  OrderResponse:
+    properties:
+      id:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/OrderItemResponse'
+        type: array
+      number:
+        type: string
+      receivedAt:
+        type: string
+      status:
+        type: string
+    type: object
+  PaginatedResponse-OrderResponse:
+    properties:
+      content:
+        items:
+          $ref: '#/definitions/OrderResponse'
+        type: array
+      first:
+        type: boolean
+      last:
+        type: boolean
+      numberOfElements:
+        type: integer
+      pageNumber:
+        type: integer
+      pageSize:
+        type: integer
+      totalElements:
+        type: integer
+      totalPages:
+        type: integer
+    type: object
+  ProductRequest:
+    properties:
+      productId:
+        type: integer
+      quantity:
+        type: integer
+    required:
+    - productId
+    - quantity
+    type: object
+  UpdateOrderRequest:
+    properties:
+      status:
+        type: string
+    required:
+    - status
+    type: object
+info:
+  contact:
+    email: postec8soatg46@gmail.com
+  description: Fastfood Operations.
+  title: Fastfood Operations
+  version: 1.0.0
+paths:
+  /v1/orders:
+    get:
+      consumes:
+      - application/json
+      description: Get orders
+      parameters:
+      - description: page value
+        in: query
+        name: page
+        type: string
+      - description: size value
+        in: query
+        name: size
+        type: string
+      - description: filter value
+        in: query
+        name: filter
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/PaginatedResponse-OrderResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get orders
+      tags:
+      - orders
+    post:
+      consumes:
+      - application/json
+      description: Insert a new Order
+      parameters:
+      - description: Request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/CreateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/OrderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Insert a new Order
+      tags:
+      - orders
+  /v1/orders/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get an order by the target ID
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/OrderResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get an order by the target ID
+      tags:
+      - orders
+    put:
+      consumes:
+      - application/json
+      description: Update an order
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/OrderResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Update an order
+      tags:
+      - orders
+swagger: "2.0"
