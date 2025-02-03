@@ -17,6 +17,7 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 
 ### Added
 
+- added docker build and push in pipeline
 - added `PUT /v1/orders/:id` endpoint to update an order
 - added `GET /v1/orders/:id` endpoint to get an order by the target ID
 - added `GET /v1/orders` endpoint to get all orders
