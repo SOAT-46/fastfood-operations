@@ -16,10 +16,28 @@ permissions:
   contents: 'write' # delivery-release
 
 jobs:
-  pipeline:
-    name: pipeline
+  code_check-style_golangci_lint:
+    name: 'code-check > style:golangci-lint'
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.23.1
+          cache: false
+      - name: Run lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.60
+          config: .golangci.yaml
+
+  tests-test_all:
+    name: 'tests > test-all'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -29,23 +47,57 @@ jobs:
         with:
           go-version: 1.23.1
           cache: false
-
-      - name: Run lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: v1.60
-          config: .golangci.yaml
-
       - name: Install dependencies
         run: |
           cd cmd
           go get .
-
       - name: Build
         run: go build -v ./...
-
       - name: Ensure test script is executable
-        run: chmod +x .github/scripts/run_tests.sh
-
+        run: chmod +x .github/scripts/tests/run_tests.sh
       - name: Run tests
-        run: .github/scripts/run_tests.sh
+        run: .github/scripts/tests/run_tests.sh
+
+  docker-build-and-push:
+    name: 'docker > build and push'
+    runs-on: ubuntu-latest
+    needs: tests-test_all
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Validate Docker Hub repository
+        id: validate-repo
+        run: |
+          REPO_NAME="fastfood-operations"
+          NAMESPACE="${{ secrets.DOCKER_USERNAME }}"
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "https://hub.docker.com/v2/repositories/${NAMESPACE}/${REPO_NAME}/")
+
+          if [ "$RESPONSE" -eq 200 ]; then
+            echo "Repository ${NAMESPACE}/${REPO_NAME} exists."
+          elif [ "$RESPONSE" -eq 404 ]; then
+            echo "Repository ${NAMESPACE}/${REPO_NAME} does not exist."
+            exit 1
+          else
+            echo "Failed to check repository existence. HTTP status code: ${RESPONSE}"
+            exit 1
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/fastfood-operations:latest
+            ${{ secrets.DOCKER_USERNAME }}/fastfood-operations:${{ github.sha }}

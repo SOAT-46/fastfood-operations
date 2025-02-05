@@ -7,8 +7,6 @@
 package main
 
 import (
-	"os"
-
 	"github.com/SOAT-46/fastfood-operations/internal/orders"
 	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/gateways"
 	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/controllers"
@@ -16,7 +14,10 @@ import (
 	"github.com/SOAT-46/fastfood-operations/internal/orders/application/usecases/implementations"
 	"github.com/SOAT-46/fastfood-operations/internal/shared/domain/entities"
 	"github.com/SOAT-46/fastfood-operations/internal/shared/infrastructure/configuration"
+	"os"
+)
 
+import (
 	_ "github.com/SOAT-46/fastfood-operations/cmd/docs"
 )
 

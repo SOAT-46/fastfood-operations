@@ -13,7 +13,7 @@ COPY internal ./internal
 RUN go install github.com/google/wire/cmd/wire@latest
 RUN go generate ./...
 RUN go install github.com/swaggo/swag/cmd/swag@latest
-RUN swag init -g cmd/main.go
+RUN swag init -g cmd/main.go --parseDependency -o cmd/docs
 
 RUN go build -o main ./cmd
 
@@ -22,7 +22,7 @@ FROM alpine:3.21.2
 WORKDIR /root/
 
 COPY --from=builder /app/main .
-COPY --from=builder /app/docs ./docs
+COPY --from=builder /app/cmd/docs ./docs
 
 EXPOSE 8080
 
