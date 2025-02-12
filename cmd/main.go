@@ -14,7 +14,7 @@ func main() {
 	defer handlePanic()
 
 	logger.Info("Applying CORS Policies")
-	engine := GetRouters(true)
+	engine := GetRoutes(true)
 
 	logger.Info("Going to initialize the server.")
 	panic(engine.Run(":8080"))

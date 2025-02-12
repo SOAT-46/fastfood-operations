@@ -1,37 +1,46 @@
 package implementations
 
 import (
+	"context"
+
 	"github.com/SOAT-46/fastfood-operations/internal/orders/application/usecases/contracts"
 	"github.com/SOAT-46/fastfood-operations/internal/orders/domain/entities"
 	"github.com/SOAT-46/fastfood-operations/internal/orders/domain/gateways"
 )
 
 type UpdateOrderUseCase struct {
-	port    gateways.UpdateOrderPort
-	getPort gateways.GetOrderByIDPort
+	port            gateways.UpdateOrderPort
+	getOrderUseCase contracts.GetOrderByID
 }
 
 func NewUpdateOrderUseCase(
 	port gateways.UpdateOrderPort,
-	getPort gateways.GetOrderByIDPort) *UpdateOrderUseCase {
+	getOrderUseCase contracts.GetOrderByID) *UpdateOrderUseCase {
 	return &UpdateOrderUseCase{
-		port:    port,
-		getPort: getPort,
+		port:            port,
+		getOrderUseCase: getOrderUseCase,
 	}
 }
 
-func (itself *UpdateOrderUseCase) Execute(order entities.Order, listeners contracts.UpdateOrderListeners) {
-	found, errFound := itself.getPort.Execute(order.ID)
-	if errFound != nil {
-		listeners.OnError(errFound)
-		return
+func (itself *UpdateOrderUseCase) Execute(
+	ctx context.Context, order entities.Order, listeners contracts.UpdateOrderListeners) {
+	getOrderListeners := contracts.GetOrderByIDListeners{
+		OnSuccess: func(found entities.Order) {
+			itself.onFound(ctx, found, order.Status, listeners)
+		},
+		OnNotFound: listeners.OnNotFound,
+		OnError:    listeners.OnError,
 	}
-	if found == nil {
-		listeners.OnNotFound()
-		return
-	}
-	found.Status = order.Status
-	updatedOrder, err := itself.port.Execute(*found)
+	itself.getOrderUseCase.Execute(ctx, order.Number, getOrderListeners)
+}
+
+func (itself *UpdateOrderUseCase) onFound(
+	ctx context.Context,
+	found entities.Order,
+	newStatus entities.OrderStatus,
+	listeners contracts.UpdateOrderListeners) {
+	found.Status = newStatus
+	updatedOrder, err := itself.port.Execute(ctx, found)
 	if err != nil {
 		listeners.OnError(err)
 		return

@@ -1,6 +1,7 @@
 package gateways
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/repositories/contracts"
@@ -16,16 +17,12 @@ func NewSaveOrderGateway(repository contracts.OrdersRepository) *SaveOrderGatewa
 	return &SaveOrderGateway{repository: repository}
 }
 
-func (itself *SaveOrderGateway) Execute(order entities.CreateOrderInput) (*entities.Order, error) {
-	dbOrder := models.BuildGormOrderFromDomainInput(order)
-	newOrder, err := itself.repository.Save(dbOrder)
+func (itself *SaveOrderGateway) Execute(
+	ctx context.Context, order entities.CreateOrderInput) (*entities.Order, error) {
+	dbOrder := models.BuildOrderFromDomainInput(order)
+	newOrder, err := itself.repository.Save(ctx, dbOrder)
 	if err != nil {
 		return nil, fmt.Errorf("error saving order: %w", err)
 	}
-
-	entity, err := newOrder.ToDomain()
-	if err != nil {
-		return nil, fmt.Errorf("error to map order: %w", err)
-	}
-	return entity, nil
+	return newOrder.ToDomain(), nil
 }

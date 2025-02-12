@@ -3,11 +3,12 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/helpers"
+	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/controllers/helpers"
 	_ "github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/responses" // for swagger
 	"github.com/SOAT-46/fastfood-operations/internal/orders/application/usecases/contracts"
 	entities2 "github.com/SOAT-46/fastfood-operations/internal/orders/domain/entities"
 	"github.com/SOAT-46/fastfood-operations/internal/shared/domain/entities"
+	"github.com/SOAT-46/fastfood-operations/internal/shared/infrastructure/controllers"
 	"github.com/SOAT-46/fastfood-operations/internal/shared/infrastructure/controllers/httperrors"
 	"github.com/SOAT-46/fastfood-operations/internal/shared/infrastructure/controllers/query"
 	"github.com/gin-gonic/gin"
@@ -40,7 +41,7 @@ func (itself GetOrderByIDController) GetBind() entities.ControllerBind {
 // @Tags orders
 // @Accept application/json
 // @Produce application/json
-// @Param id path int64 true "Order ID"
+// @Param id path string true "Order ID"
 // @Success 200 {object} responses.OrderResponse "OK"
 // @Failure 404 {object} httperrors.ErrorResponse "Not Found"
 // @Failure 500 {object} httperrors.ErrorResponse "Internal Server Error"
@@ -49,16 +50,19 @@ func (itself GetOrderByIDController) Execute(gcontext *gin.Context) {
 	itself.gcontext = gcontext
 	id := query.GetID(itself.gcontext)
 
+	ctx, cancel := controllers.DefaultTimeout(itself.gcontext)
+	defer cancel()
+
 	listeners := contracts.GetOrderByIDListeners{
 		OnSuccess:  itself.onSuccess,
 		OnNotFound: itself.onNotFound,
 		OnError:    itself.onError,
 	}
-	itself.useCase.Execute(id, listeners)
+	itself.useCase.Execute(ctx, id, listeners)
 }
 
 func (itself GetOrderByIDController) onSuccess(order entities2.Order) {
-	helpers.HandleResponse(itself.gcontext, http.StatusOK, order, itself.onError)
+	helpers.HandleResponse(itself.gcontext, http.StatusOK, order)
 }
 
 func (itself GetOrderByIDController) onNotFound() {

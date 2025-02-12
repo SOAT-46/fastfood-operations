@@ -34,8 +34,14 @@ func (itself *Pagination) IsLastPage() bool {
 func (itself *Pagination) TotalPages() int64 {
 	limit := int64(itself.Size)
 
-	if limit >= itself.TotalElements {
-		return 1
+	if limit == 0 || itself.TotalElements == 0 {
+		return 0
 	}
-	return itself.TotalElements / limit
+	totalPages := itself.TotalElements / limit
+
+	// If there's a remainder, add 1 to account for the extra page
+	if itself.TotalElements%limit != 0 {
+		totalPages++
+	}
+	return totalPages
 }

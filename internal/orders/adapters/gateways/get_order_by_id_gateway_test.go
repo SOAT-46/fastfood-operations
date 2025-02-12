@@ -3,6 +3,7 @@
 package gateways_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -16,7 +17,7 @@ import (
 var ErrTestGetOrderByIDGateway = errors.New("test error")
 
 func TestGetOrderByIDGateway(t *testing.T) {
-	id := 1
+	id := "1"
 	t.Run("should return an order by id", func(t *testing.T) {
 		// given
 		paginatedEntity := builders.NewGormOrderBuilder().BuildPaginated()
@@ -24,7 +25,7 @@ func TestGetOrderByIDGateway(t *testing.T) {
 		gateway := gateways.NewGetOrderByIDGateway(repository)
 
 		// when
-		order, err := gateway.Execute(id)
+		order, err := gateway.Execute(context.Background(), id)
 
 		// then
 		assert.NotNil(t, order)
@@ -37,7 +38,7 @@ func TestGetOrderByIDGateway(t *testing.T) {
 		gateway := gateways.NewGetOrderByIDGateway(repository)
 
 		// when
-		order, err := gateway.Execute(id)
+		order, err := gateway.Execute(context.Background(), id)
 
 		// then
 		assert.Nil(t, order)

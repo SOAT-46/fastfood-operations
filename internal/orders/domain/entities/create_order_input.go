@@ -1,9 +1,8 @@
 package entities
 
 type CreateOrderInput struct {
-	Products  []OrderProduct
-	UserID    *string
-	PaymentID string
+	Products []OrderProduct
+	Number   string
 }
 
 func (input *CreateOrderInput) IsValid() bool {

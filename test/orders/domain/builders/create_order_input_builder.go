@@ -15,11 +15,10 @@ func NewCreateOrderInputBuilder() *CreateOrderInputBuilder {
 
 func (itself *CreateOrderInputBuilder) BuildInvalid() entities.CreateOrderInput {
 	orderProduct := entities.OrderProduct{
-		Quantity:  0,
-		ProductID: 0,
+		Quantity: 0,
+		Product:  "",
 	}
 	return entities.CreateOrderInput{
 		Products: []entities.OrderProduct{orderProduct},
-		UserID:   nil,
 	}
 }

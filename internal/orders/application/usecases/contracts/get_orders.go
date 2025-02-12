@@ -1,12 +1,14 @@
 package contracts
 
 import (
+	"context"
+
 	"github.com/SOAT-46/fastfood-operations/internal/orders/domain/entities"
 	global "github.com/SOAT-46/fastfood-operations/internal/shared/domain/entities"
 )
 
 type GetOrders interface {
-	Execute(pagination global.Pagination, listeners GetOrdersListeners)
+	Execute(ctx context.Context, pagination global.Pagination, listeners GetOrdersListeners)
 }
 
 type GetOrdersListeners struct {

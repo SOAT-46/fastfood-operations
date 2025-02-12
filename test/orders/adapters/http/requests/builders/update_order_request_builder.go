@@ -21,3 +21,9 @@ func (itself *UpdateOrderRequestBuilder) BuildRequest() *bytes.Buffer {
 	requestBodyBytes, _ := json.Marshal(data)
 	return bytes.NewBuffer(requestBodyBytes)
 }
+
+func (itself *UpdateOrderRequestBuilder) BuildInvalidRequest() *bytes.Buffer {
+	data := "invalid"
+	requestBodyBytes, _ := json.Marshal(data)
+	return bytes.NewBuffer(requestBodyBytes)
+}

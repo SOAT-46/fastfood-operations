@@ -1,6 +1,8 @@
 package doubles
 
 import (
+	"context"
+
 	"github.com/SOAT-46/fastfood-operations/internal/orders/domain/entities"
 )
 
@@ -23,6 +25,6 @@ func (itself *InMemoryGetOrderByIDPort) WithOrder(order *entities.Order) *InMemo
 	return itself
 }
 
-func (itself *InMemoryGetOrderByIDPort) Execute(_ int) (*entities.Order, error) {
+func (itself *InMemoryGetOrderByIDPort) Execute(_ context.Context, _ string) (*entities.Order, error) {
 	return itself.order, itself.err
 }

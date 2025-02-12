@@ -27,7 +27,7 @@ func CorsMiddleware() gin.HandlerFunc {
 	}
 }
 
-func GetRouters(corsFlag bool) *gin.Engine {
+func GetRoutes(corsFlag bool) *gin.Engine {
 	logger.Info("Setting up Routes")
 
 	engine := gin.Default()

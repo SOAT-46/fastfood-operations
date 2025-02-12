@@ -1,16 +1,14 @@
 definitions:
   CreateOrderRequest:
     properties:
-      paymentId:
+      number:
         type: string
       products:
         items:
           $ref: '#/definitions/ProductRequest'
         type: array
-      userId:
-        type: string
     required:
-    - paymentId
+    - number
     - products
     type: object
   ErrorResponse:
@@ -21,14 +19,12 @@ definitions:
   OrderItemResponse:
     properties:
       product:
-        type: integer
+        type: string
       quantity:
         type: integer
     type: object
   OrderResponse:
     properties:
-      id:
-        type: integer
       items:
         items:
           $ref: '#/definitions/OrderItemResponse'
@@ -63,12 +59,12 @@ definitions:
     type: object
   ProductRequest:
     properties:
-      productId:
-        type: integer
+      product:
+        type: string
       quantity:
         type: integer
     required:
-    - productId
+    - product
     - quantity
     type: object
   UpdateOrderRequest:
@@ -156,7 +152,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -184,7 +180,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Request body
         in: body
         name: request

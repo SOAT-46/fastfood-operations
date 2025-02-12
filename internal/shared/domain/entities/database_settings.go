@@ -1,29 +1,46 @@
 package entities
 
-import "fmt"
+import (
+	"fmt"
+	"net"
+)
+
+const (
+	MinPoolSize = 3
+	MaxPoolSize = 10
+)
 
 type DatabaseSettings struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
-	Database string
-	SSL      string
+	host     string
+	port     string
+	user     string
+	password string
 }
 
-func NewDatabaseSettings(host, port, user, password, database, ssl string) *DatabaseSettings {
+func NewDatabaseSettings(host, port, user, password string) *DatabaseSettings {
 	return &DatabaseSettings{
 		host,
 		port,
 		user,
 		password,
-		database,
-		ssl,
 	}
 }
 
-// GetDSN Returns the Data Source Name (DSN)
-func (itself *DatabaseSettings) GetDSN() string {
-	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
-		itself.Host, itself.User, itself.Password, itself.Database, itself.Port, itself.SSL)
+func (itself *DatabaseSettings) GetMongoURI() string {
+	return fmt.Sprintf(
+		"mongodb://%s:%s@%s",
+		itself.user,
+		itself.password,
+		net.JoinHostPort(itself.host, itself.port),
+	)
+}
+
+func (itself *DatabaseSettings) GetMinPoolSize() *uint64 {
+	minPoolSize := uint64(MinPoolSize)
+	return &minPoolSize
+}
+
+func (itself *DatabaseSettings) GetMaxPoolSize() *uint64 {
+	maxPoolSize := uint64(MaxPoolSize)
+	return &maxPoolSize
 }

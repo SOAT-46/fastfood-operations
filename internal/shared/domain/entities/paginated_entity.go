@@ -11,3 +11,10 @@ func NewPaginatedEntity[T any](content []T, pagination Pagination) PaginatedEnti
 		Pagination: pagination,
 	}
 }
+
+func NewEmptyPaginatedEntity[T any](pagination Pagination) PaginatedEntity[T] {
+	return PaginatedEntity[T]{
+		Content:    []T{},
+		Pagination: pagination,
+	}
+}

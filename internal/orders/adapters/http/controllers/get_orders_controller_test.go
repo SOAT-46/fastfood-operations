@@ -15,7 +15,7 @@ import (
 
 func TestGetOrdersController(t *testing.T) {
 	endpoint := "/orders"
-	t.Run("should get a list of orders", func(t *testing.T) {
+	t.Run("should respond OK (200) when there are orders to show", func(t *testing.T) {
 		// given
 		gin.SetMode(gin.TestMode)
 		router := gin.New()
@@ -32,10 +32,10 @@ func TestGetOrdersController(t *testing.T) {
 
 		// then
 		assert.Equal(t, http.StatusOK, recorder.Code)
-		assert.NoError(t, err, "no error in the request")
+		assert.NoError(t, err, defaultNoErrorMessage)
 	})
 
-	t.Run("should return an error to get orders", func(t *testing.T) {
+	t.Run("should respond INTERNAL_SERVER_ERROR (500) due to an unexpected error", func(t *testing.T) {
 		// given
 		gin.SetMode(gin.TestMode)
 		router := gin.New()
@@ -52,6 +52,18 @@ func TestGetOrdersController(t *testing.T) {
 
 		// then
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
-		assert.NoError(t, err, "no error in the request")
+		assert.NoError(t, err, defaultNoErrorMessage)
+	})
+
+	t.Run("should return the metadata", func(t *testing.T) {
+		// given
+		controller := controllers.NewGetOrdersController(nil)
+
+		// when
+		metadata := controller.GetBind()
+
+		// then
+		assert.Equal(t, "/orders", metadata.RelativePath)
+		assert.Equal(t, http.MethodGet, metadata.Method)
 	})
 }

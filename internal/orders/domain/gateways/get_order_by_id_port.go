@@ -1,7 +1,11 @@
 package gateways
 
-import "github.com/SOAT-46/fastfood-operations/internal/orders/domain/entities"
+import (
+	"context"
+
+	"github.com/SOAT-46/fastfood-operations/internal/orders/domain/entities"
+)
 
 type GetOrderByIDPort interface {
-	Execute(id int) (*entities.Order, error)
+	Execute(ctx context.Context, id string) (*entities.Order, error)
 }
