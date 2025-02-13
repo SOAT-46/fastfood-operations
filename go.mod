@@ -3,7 +3,7 @@ module github.com/SOAT-46/fastfood-operations
 go 1.23.1
 
 require (
-	github.com/brianvoe/gofakeit/v7 v7.1.2
+	github.com/brianvoe/gofakeit/v7 v7.2.1
 	github.com/gin-gonic/gin v1.10.0
 	github.com/google/wire v0.6.0
 	github.com/sirupsen/logrus v1.9.3
