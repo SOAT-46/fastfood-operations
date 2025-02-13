@@ -1,13 +1,11 @@
 package doubles
 
 import (
-	"errors"
+	"context"
 
 	"github.com/SOAT-46/fastfood-operations/internal/orders/application/usecases/contracts"
 	"github.com/SOAT-46/fastfood-operations/test/orders/domain/builders"
 )
-
-var ErrGetOrderByIDUseCaseStub = errors.New("test error")
 
 type GetOrderByIDUseCaseStub struct {
 	callback func(listeners contracts.GetOrderByIDListeners)
@@ -32,13 +30,14 @@ func (itself *GetOrderByIDUseCaseStub) WithOnNotFound() *GetOrderByIDUseCaseStub
 	return itself
 }
 
-func (itself *GetOrderByIDUseCaseStub) WithOnError() *GetOrderByIDUseCaseStub {
+func (itself *GetOrderByIDUseCaseStub) WithOnError(err error) *GetOrderByIDUseCaseStub {
 	itself.callback = func(listeners contracts.GetOrderByIDListeners) {
-		listeners.OnError(ErrGetOrderByIDUseCaseStub)
+		listeners.OnError(err)
 	}
 	return itself
 }
 
-func (itself *GetOrderByIDUseCaseStub) Execute(_ int, listeners contracts.GetOrderByIDListeners) {
+func (itself *GetOrderByIDUseCaseStub) Execute(
+	_ context.Context, _ string, listeners contracts.GetOrderByIDListeners) {
 	itself.callback(listeners)
 }

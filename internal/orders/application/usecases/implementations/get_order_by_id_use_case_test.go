@@ -3,6 +3,7 @@
 package implementations_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -18,7 +19,7 @@ import (
 var ErrTestGetOrderByIDUseCase = errors.New("test error")
 
 func TestGetOrderByIDUseCase(t *testing.T) {
-	id := 1
+	id := "1"
 	t.Run("should call OnSuccess when the order was found", func(t *testing.T) {
 		// given
 		order := builders.NewOrderBuilder().Build()
@@ -33,7 +34,7 @@ func TestGetOrderByIDUseCase(t *testing.T) {
 		}
 
 		// when
-		useCase.Execute(id, listeners)
+		useCase.Execute(context.Background(), id, listeners)
 	})
 
 	t.Run("should call OnNotFound when the order was not found", func(t *testing.T) {
@@ -49,7 +50,7 @@ func TestGetOrderByIDUseCase(t *testing.T) {
 		}
 
 		// when
-		useCase.Execute(id, listeners)
+		useCase.Execute(context.Background(), id, listeners)
 
 		// then
 		assert.True(t, wasCalled)
@@ -69,6 +70,6 @@ func TestGetOrderByIDUseCase(t *testing.T) {
 		}
 
 		// when
-		useCase.Execute(id, listeners)
+		useCase.Execute(context.Background(), id, listeners)
 	})
 }

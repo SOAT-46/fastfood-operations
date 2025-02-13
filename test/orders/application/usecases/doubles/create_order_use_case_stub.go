@@ -1,6 +1,7 @@
 package doubles
 
 import (
+	"context"
 	"errors"
 
 	"github.com/SOAT-46/fastfood-operations/internal/orders/application/usecases/contracts"
@@ -40,6 +41,7 @@ func (itself *CreateOrderUseCaseStub) WithOnError() *CreateOrderUseCaseStub {
 	return itself
 }
 
-func (itself *CreateOrderUseCaseStub) Execute(_ entities.CreateOrderInput, listeners contracts.CreateOrderListeners) {
+func (itself *CreateOrderUseCaseStub) Execute(
+	_ context.Context, _ entities.CreateOrderInput, listeners contracts.CreateOrderListeners) {
 	itself.callback(listeners)
 }

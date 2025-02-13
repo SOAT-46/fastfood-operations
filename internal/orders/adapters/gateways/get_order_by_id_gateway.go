@@ -1,6 +1,7 @@
 package gateways
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/repositories/contracts"
@@ -15,15 +16,10 @@ func NewGetOrderByIDGateway(repository contracts.OrdersRepository) *GetOrderByID
 	return &GetOrderByIDGateway{repository: repository}
 }
 
-func (itself *GetOrderByIDGateway) Execute(id int) (*entities.Order, error) {
-	order, err := itself.repository.GetByID(id)
+func (itself *GetOrderByIDGateway) Execute(ctx context.Context, id string) (*entities.Order, error) {
+	order, err := itself.repository.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("error getting order: %w", err)
 	}
-
-	entity, err := order.ToDomain()
-	if err != nil {
-		return nil, fmt.Errorf("error to map order: %w", err)
-	}
-	return entity, nil
+	return order.ToDomain(), nil
 }

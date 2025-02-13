@@ -125,7 +125,7 @@ const docTemplate = `{
                 "summary": "Get an order by the target ID",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Order ID",
                         "name": "id",
                         "in": "path",
@@ -167,7 +167,7 @@ const docTemplate = `{
                 "summary": "Update an order",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Order ID",
                         "name": "id",
                         "in": "path",
@@ -210,11 +210,11 @@ const docTemplate = `{
         "CreateOrderRequest": {
             "type": "object",
             "required": [
-                "paymentId",
+                "number",
                 "products"
             ],
             "properties": {
-                "paymentId": {
+                "number": {
                     "type": "string"
                 },
                 "products": {
@@ -222,9 +222,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/ProductRequest"
                     }
-                },
-                "userId": {
-                    "type": "string"
                 }
             }
         },
@@ -240,7 +237,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "product": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "quantity": {
                     "type": "integer"
@@ -250,9 +247,6 @@ const docTemplate = `{
         "OrderResponse": {
             "type": "object",
             "properties": {
-                "id": {
-                    "type": "integer"
-                },
                 "items": {
                     "type": "array",
                     "items": {
@@ -305,12 +299,12 @@ const docTemplate = `{
         "ProductRequest": {
             "type": "object",
             "required": [
-                "productId",
+                "product",
                 "quantity"
             ],
             "properties": {
-                "productId": {
-                    "type": "integer"
+                "product": {
+                    "type": "string"
                 },
                 "quantity": {
                     "type": "integer"

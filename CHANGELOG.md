@@ -24,3 +24,7 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 - added `POST /v1/orders` endpoint to create a new order
 - added Dockerfile to containerize the application
 - added project structure
+
+### Changed
+
+- changed database from Postgres to MongoDB

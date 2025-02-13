@@ -14,9 +14,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	defaultNoErrorMessage = "no error in the request"
+)
+
 func TestCreateOrderController(t *testing.T) {
 	endpoint := "/orders"
-	t.Run("should create an order", func(t *testing.T) {
+	t.Run("should respond CREATED (201) when the order was created", func(t *testing.T) {
 		// given
 		gin.SetMode(gin.TestMode)
 		router := gin.New()
@@ -34,16 +38,16 @@ func TestCreateOrderController(t *testing.T) {
 
 		// then
 		assert.Equal(t, http.StatusCreated, recorder.Code)
-		assert.NoError(t, err, "no error in the request")
+		assert.NoError(t, err, defaultNoErrorMessage)
 	})
 
-	t.Run("should return an error to create the order", func(t *testing.T) {
+	t.Run("should respond BAD_REQUEST (400) when the request is invalid", func(t *testing.T) {
 		// given
 		gin.SetMode(gin.TestMode)
 		router := gin.New()
 
-		entity := builders.NewCreateOrderRequestBuilder().BuildRequest()
-		useCase := doubles.NewCreateOrderUseCaseStub().WithOnError()
+		entity := builders.NewCreateOrderRequestBuilder().BuildInvalidRequest()
+		useCase := doubles.NewCreateOrderUseCaseStub().WithOnSuccess()
 		controller := controllers.NewCreateOrderController(useCase)
 
 		// when
@@ -54,7 +58,41 @@ func TestCreateOrderController(t *testing.T) {
 		router.ServeHTTP(recorder, req)
 
 		// then
-		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
-		assert.NoError(t, err, "no error in the request")
+		assert.Equal(t, http.StatusBadRequest, recorder.Code)
+		assert.NoError(t, err, defaultNoErrorMessage)
+	})
+
+	t.Run("should respond INTERNAL_SERVER_ERROR (500) when there's an error to create the order",
+		func(t *testing.T) {
+			// given
+			gin.SetMode(gin.TestMode)
+			router := gin.New()
+
+			entity := builders.NewCreateOrderRequestBuilder().BuildRequest()
+			useCase := doubles.NewCreateOrderUseCaseStub().WithOnError()
+			controller := controllers.NewCreateOrderController(useCase)
+
+			// when
+			router.POST(endpoint, controller.Execute)
+
+			req, err := http.NewRequest(http.MethodPost, endpoint, entity)
+			recorder := httptest.NewRecorder()
+			router.ServeHTTP(recorder, req)
+
+			// then
+			assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+			assert.NoError(t, err, defaultNoErrorMessage)
+		})
+
+	t.Run("should return the metadata", func(t *testing.T) {
+		// given
+		controller := controllers.NewCreateOrderController(nil)
+
+		// when
+		metadata := controller.GetBind()
+
+		// then
+		assert.Equal(t, "/orders", metadata.RelativePath)
+		assert.Equal(t, http.MethodPost, metadata.Method)
 	})
 }

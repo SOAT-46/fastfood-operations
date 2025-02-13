@@ -7,6 +7,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/SOAT-46/fastfood-operations/internal/orders"
 	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/gateways"
 	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/controllers"
@@ -14,10 +16,7 @@ import (
 	"github.com/SOAT-46/fastfood-operations/internal/orders/application/usecases/implementations"
 	"github.com/SOAT-46/fastfood-operations/internal/shared/domain/entities"
 	"github.com/SOAT-46/fastfood-operations/internal/shared/infrastructure/configuration"
-	"os"
-)
 
-import (
 	_ "github.com/SOAT-46/fastfood-operations/cmd/docs"
 )
 
@@ -25,8 +24,8 @@ import (
 
 func injectApps() []entities.App {
 	databaseSettings := newDatabaseSettings()
-	db := configuration.GormDB(databaseSettings)
-	gormOrdersRepository := repositories.NewGormOrdersRepository(db)
+	database := configuration.MongoClient(databaseSettings)
+	gormOrdersRepository := repositories.NewGormOrdersRepository(database)
 	saveOrderGateway := gateways.NewSaveOrderGateway(gormOrdersRepository)
 	createOrderUseCase := implementations.NewCreateOrderUseCase(saveOrderGateway)
 	createOrderController := controllers.NewCreateOrderController(createOrderUseCase)
@@ -35,9 +34,9 @@ func injectApps() []entities.App {
 	getOrdersController := controllers.NewGetOrdersController(getOrdersUseCase)
 	updateOrderGateway := gateways.NewUpdateOrderGateway(gormOrdersRepository)
 	getOrderByIDGateway := gateways.NewGetOrderByIDGateway(gormOrdersRepository)
-	updateOrderUseCase := implementations.NewUpdateOrderUseCase(updateOrderGateway, getOrderByIDGateway)
-	updateOrderController := controllers.NewUpdateOrderController(updateOrderUseCase)
 	getOrderByIDUseCase := implementations.NewGetOrderByIDUseCase(getOrderByIDGateway)
+	updateOrderUseCase := implementations.NewUpdateOrderUseCase(updateOrderGateway, getOrderByIDUseCase)
+	updateOrderController := controllers.NewUpdateOrderController(updateOrderUseCase)
 	getOrderByIDController := controllers.NewGetOrderByIDController(getOrderByIDUseCase)
 	app := orders.NewApp(createOrderController, getOrdersController, updateOrderController, getOrderByIDController)
 	v := newApps(app)
@@ -47,19 +46,15 @@ func injectApps() []entities.App {
 // wire.go:
 
 func newDatabaseSettings() *entities.DatabaseSettings {
-	host := os.Getenv("POSTGRES_HOST")
-	port := os.Getenv("POSTGRES_PORT")
-	user := os.Getenv("POSTGRES_USER")
-	password := os.Getenv("POSTGRES_PASSWORD")
-	database := os.Getenv("POSTGRES_DB")
-	ssl := os.Getenv("DB_SSL")
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
 	return entities.NewDatabaseSettings(
 		host,
 		port,
 		user,
 		password,
-		database,
-		ssl,
 	)
 }
 

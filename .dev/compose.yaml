@@ -10,22 +10,24 @@ services:
     networks:
       - application-network
     depends_on:
-      - fastfood_operations_database
+      - fastfood_database
     deploy:
       resources:
         limits:
           cpus: '1'
           memory: '1GB'
-  fastfood_operations_database:
+  fastfood_database:
     container_name: fastfood_database
-    image: postgres:17.0-alpine3.20
+    image: mongodb/mongodb-community-server:7.0.14-ubi8
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+      - MONGO_INITDB_DATABASE=fastfood_operations_database
     restart: always
-    volumes:
-      - db-data:/var/lib/postgresql/data
-    env_file:
-      - .env
     ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+      - "${DB_PORT:-27017}:27017"
+    volumes:
+      - db-data:/data/db
     networks:
       - application-network
     deploy:
@@ -33,9 +35,9 @@ services:
         limits:
           cpus: '2'
           memory: '2GB'
-
 volumes:
   db-data:
 
 networks:
   application-network:
+    driver: bridge

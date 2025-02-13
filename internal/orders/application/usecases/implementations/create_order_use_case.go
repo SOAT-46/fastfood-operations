@@ -1,6 +1,7 @@
 package implementations
 
 import (
+	"context"
 	"errors"
 
 	"github.com/SOAT-46/fastfood-operations/internal/orders/application/usecases/contracts"
@@ -21,13 +22,13 @@ func NewCreateOrderUseCase(port gateways.SaveOrderPort) *CreateOrderUseCase {
 }
 
 func (itself *CreateOrderUseCase) Execute(
-	input entities.CreateOrderInput, listeners contracts.CreateOrderListeners) {
+	ctx context.Context, input entities.CreateOrderInput, listeners contracts.CreateOrderListeners) {
 	if !input.IsValid() {
 		listeners.OnInvalid(ErrCreateOrderUseCase)
 		return
 	}
 
-	order, err := itself.port.Execute(input)
+	order, err := itself.port.Execute(ctx, input)
 	if err != nil {
 		listeners.OnError(err)
 		return

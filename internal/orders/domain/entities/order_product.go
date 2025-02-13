@@ -1,9 +1,8 @@
 package entities
 
 type OrderProduct struct {
-	ID        int `mapstructure:"id"`
-	ProductID int `mapstructure:"product_id"`
-	Quantity  int `mapstructure:"quantity"`
+	Product  string `mapstructure:"product"`
+	Quantity int    `mapstructure:"quantity"`
 }
 
 func (itself OrderProduct) IsValid() bool {
@@ -11,7 +10,7 @@ func (itself OrderProduct) IsValid() bool {
 }
 
 func (itself OrderProduct) hasValidProduct() bool {
-	return itself.ProductID > 0
+	return itself.Product != ""
 }
 
 func (itself OrderProduct) hasValidQuantity() bool {

@@ -1,6 +1,7 @@
 package gateways
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/repositories/contracts"
@@ -18,16 +19,12 @@ func NewUpdateOrderGateway(repository contracts.OrdersRepository) *UpdateOrderGa
 	}
 }
 
-func (itself *UpdateOrderGateway) Execute(order entities.Order) (*entities.Order, error) {
-	dbOrder := models.BuildGormOrderFromDomain(order)
-	updatedOrder, err := itself.repository.Update(dbOrder)
+func (itself *UpdateOrderGateway) Execute(ctx context.Context, order entities.Order) (*entities.Order, error) {
+	dbOrder := models.BuildOrderFromDomain(order)
+	updatedOrder, err := itself.repository.Update(ctx, dbOrder)
 	if err != nil {
 		return nil, fmt.Errorf("error updating order: %w", err)
 	}
 
-	entity, err := updatedOrder.ToDomain()
-	if err != nil {
-		return nil, fmt.Errorf("error to map order: %w", err)
-	}
-	return entity, nil
+	return updatedOrder.ToDomain(), nil
 }

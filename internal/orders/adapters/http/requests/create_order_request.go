@@ -3,16 +3,14 @@ package requests
 import "github.com/SOAT-46/fastfood-operations/internal/orders/domain/entities"
 
 type CreateOrderRequest struct {
-	UserID    *string          `json:"userId,omitempty"`
-	PaymentID string           `json:"paymentId" binding:"required"`
-	Products  []ProductRequest `json:"products" binding:"required"`
+	Number   string           `json:"number" binding:"required"`
+	Products []ProductRequest `json:"products" binding:"required"`
 } // @name CreateOrderRequest
 
 func (itself CreateOrderRequest) ToDomain() entities.CreateOrderInput {
 	return entities.CreateOrderInput{
-		Products:  itself.buildProducts(),
-		UserID:    itself.UserID,
-		PaymentID: itself.PaymentID,
+		Products: itself.buildProducts(),
+		Number:   itself.Number,
 	}
 }
 

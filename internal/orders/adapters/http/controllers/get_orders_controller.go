@@ -3,11 +3,12 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/helpers"
+	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/controllers/helpers"
 	_ "github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/responses" // for swagger
 	"github.com/SOAT-46/fastfood-operations/internal/orders/application/usecases/contracts"
 	entities2 "github.com/SOAT-46/fastfood-operations/internal/orders/domain/entities"
 	"github.com/SOAT-46/fastfood-operations/internal/shared/domain/entities"
+	"github.com/SOAT-46/fastfood-operations/internal/shared/infrastructure/controllers"
 	"github.com/SOAT-46/fastfood-operations/internal/shared/infrastructure/controllers/httperrors"
 	_ "github.com/SOAT-46/fastfood-operations/internal/shared/infrastructure/controllers/page" // for swagger
 	"github.com/SOAT-46/fastfood-operations/internal/shared/infrastructure/controllers/query"
@@ -51,15 +52,18 @@ func (itself GetOrdersController) Execute(gcontext *gin.Context) {
 	itself.gcontext = gcontext
 	pagination := query.GetPagination(itself.gcontext)
 
+	ctx, cancel := controllers.DefaultTimeout(itself.gcontext)
+	defer cancel()
+
 	listeners := contracts.GetOrdersListeners{
 		OnSuccess: itself.onSuccess,
 		OnError:   itself.onError,
 	}
-	itself.useCase.Execute(pagination, listeners)
+	itself.useCase.Execute(ctx, pagination, listeners)
 }
 
 func (itself GetOrdersController) onSuccess(page entities.PaginatedEntity[entities2.Order]) {
-	helpers.HandlePaginatedResponse(itself.gcontext, http.StatusOK, page, itself.onError)
+	helpers.HandlePaginatedResponse(itself.gcontext, http.StatusOK, page)
 }
 
 func (itself GetOrdersController) onError(err error) {

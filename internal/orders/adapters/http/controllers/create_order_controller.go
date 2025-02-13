@@ -3,12 +3,13 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/helpers"
+	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/controllers/helpers"
 	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/requests"
 	_ "github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/responses" // for swagger
 	"github.com/SOAT-46/fastfood-operations/internal/orders/application/usecases/contracts"
 	entities2 "github.com/SOAT-46/fastfood-operations/internal/orders/domain/entities"
 	"github.com/SOAT-46/fastfood-operations/internal/shared/domain/entities"
+	"github.com/SOAT-46/fastfood-operations/internal/shared/infrastructure/controllers"
 	"github.com/SOAT-46/fastfood-operations/internal/shared/infrastructure/controllers/httperrors"
 	"github.com/gin-gonic/gin"
 )
@@ -47,6 +48,8 @@ func (itself CreateOrderController) GetBind() entities.ControllerBind {
 // @Router /v1/orders [post].
 func (itself CreateOrderController) Execute(gcontext *gin.Context) {
 	itself.gcontext = gcontext
+	ctx, cancel := controllers.DefaultTimeout(itself.gcontext)
+	defer cancel()
 
 	var body requests.CreateOrderRequest
 	if err := gcontext.ShouldBindJSON(&body); err != nil {
@@ -61,11 +64,11 @@ func (itself CreateOrderController) Execute(gcontext *gin.Context) {
 	}
 
 	input := body.ToDomain()
-	itself.useCase.Execute(input, listeners)
+	itself.useCase.Execute(ctx, input, listeners)
 }
 
 func (itself CreateOrderController) onSuccess(order entities2.Order) {
-	helpers.HandleResponse(itself.gcontext, http.StatusCreated, order, itself.onError)
+	helpers.HandleResponse(itself.gcontext, http.StatusCreated, order)
 }
 
 func (itself CreateOrderController) onInvalid(err error) {

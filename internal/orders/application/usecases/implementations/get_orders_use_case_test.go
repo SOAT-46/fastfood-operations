@@ -3,6 +3,7 @@
 package implementations_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/SOAT-46/fastfood-operations/internal/orders/application/usecases/contracts"
@@ -32,7 +33,7 @@ func TestGetOrdersUseCase(t *testing.T) {
 		}
 
 		// when
-		useCase.Execute(pagination, listeners)
+		useCase.Execute(context.Background(), pagination, listeners)
 	})
 
 	t.Run("should call OnError when there's an error", func(t *testing.T) {
@@ -48,6 +49,6 @@ func TestGetOrdersUseCase(t *testing.T) {
 		}
 
 		// when
-		useCase.Execute(builders.NewPaginationBuilder().Build(), listeners)
+		useCase.Execute(context.Background(), builders.NewPaginationBuilder().Build(), listeners)
 	})
 }

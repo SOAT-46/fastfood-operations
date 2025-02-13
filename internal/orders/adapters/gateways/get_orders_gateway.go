@@ -1,6 +1,8 @@
 package gateways
 
 import (
+	"context"
+
 	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/gateways/mappers"
 	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/repositories/contracts"
 	"github.com/SOAT-46/fastfood-operations/internal/orders/domain/entities"
@@ -18,8 +20,8 @@ func NewGetOrdersGateway(repository contracts.OrdersRepository) *GetOrdersGatewa
 }
 
 func (itself *GetOrdersGateway) Execute(
-	pagination global.Pagination) (global.PaginatedEntity[entities.Order], error) {
-	orders, err := itself.repository.ListAll(pagination)
+	ctx context.Context, pagination global.Pagination) (global.PaginatedEntity[entities.Order], error) {
+	orders, err := itself.repository.ListAll(ctx, pagination)
 	if err != nil {
 		return global.NewPaginatedEntity([]entities.Order{}, pagination), err
 	}

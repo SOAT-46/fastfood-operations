@@ -3,6 +3,7 @@
 package implementations_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/SOAT-46/fastfood-operations/internal/orders/application/usecases/contracts"
@@ -30,7 +31,7 @@ func TestCreateOrderUseCase(t *testing.T) {
 		}
 
 		// when
-		useCase.Execute(input, listeners)
+		useCase.Execute(context.Background(), input, listeners)
 	})
 
 	t.Run("should call OnInvalid when the input is not valid", func(t *testing.T) {
@@ -48,7 +49,7 @@ func TestCreateOrderUseCase(t *testing.T) {
 		}
 
 		// when
-		useCase.Execute(input, listeners)
+		useCase.Execute(context.Background(), input, listeners)
 	})
 
 	t.Run("should call OnError when there`s an error to save the order", func(t *testing.T) {
@@ -66,6 +67,6 @@ func TestCreateOrderUseCase(t *testing.T) {
 		}
 
 		// when
-		useCase.Execute(input, listeners)
+		useCase.Execute(context.Background(), input, listeners)
 	})
 }

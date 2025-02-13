@@ -8,10 +8,10 @@ type UpdateOrderRequest struct {
 	Status string `json:"status" binding:"required"`
 } // @name UpdateOrderRequest
 
-func (itself UpdateOrderRequest) ToDomain(id int) entities.Order {
+func (itself UpdateOrderRequest) ToDomain(id string) entities.Order {
 	status := entities.ToOrderStatus(itself.Status)
 	return entities.Order{
-		ID:     id,
+		Number: id,
 		Status: status,
 	}
 }

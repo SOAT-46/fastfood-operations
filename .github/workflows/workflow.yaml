@@ -35,9 +35,10 @@ jobs:
           version: v1.60
           config: .golangci.yaml
 
-  tests-test_all:
+  tests_test_all:
     name: 'tests > test-all'
     runs-on: ubuntu-latest
+    needs: code_check-style_golangci_lint
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -55,13 +56,54 @@ jobs:
         run: go build -v ./...
       - name: Ensure test script is executable
         run: chmod +x .github/scripts/tests/run_tests.sh
+
+      - name: Setup Testcontainers Cloud Client
+        uses: atomicjar/testcontainers-cloud-setup-action@main
+        with:
+          token: ${{ secrets.TC_CLOUD_TOKEN }}
+
       - name: Run tests
-        run: .github/scripts/tests/run_tests.sh
+        run: make test
+
+      - name: Publish test reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            coverage.txt
+            junit.xml
+            cobertura.xml
+
+  quality_sonarqube-analysis:
+    name: 'quality > sonarqube-analysis'
+    runs-on: ubuntu-latest
+    needs: tests_test_all
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.23.1
+          cache: false
+      - name: Download test reports
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-reports
+          path: .
+
+      - name: Run SonarQube Scanner
+        uses: SonarSource/sonarqube-scan-action@v4.2.1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   docker-build-and-push:
     name: 'docker > build and push'
     runs-on: ubuntu-latest
-    needs: tests-test_all
+    needs: [tests_test_all, quality_sonarqube-analysis]
     if: github.event_name != 'pull_request'
     steps:
       - name: Checkout code

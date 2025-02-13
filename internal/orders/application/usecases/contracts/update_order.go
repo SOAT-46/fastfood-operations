@@ -1,9 +1,13 @@
 package contracts
 
-import "github.com/SOAT-46/fastfood-operations/internal/orders/domain/entities"
+import (
+	"context"
+
+	"github.com/SOAT-46/fastfood-operations/internal/orders/domain/entities"
+)
 
 type UpdateOrder interface {
-	Execute(order entities.Order, listeners UpdateOrderListeners)
+	Execute(ctx context.Context, order entities.Order, listeners UpdateOrderListeners)
 }
 
 type UpdateOrderListeners struct {

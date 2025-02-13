@@ -1,24 +1,31 @@
 package configuration
 
 import (
+	"context"
+	"time"
+
 	"github.com/SOAT-46/fastfood-operations/internal/shared/domain/entities"
-	logger "github.com/sirupsen/logrus"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func postgresDialector(dsn string) gorm.Dialector {
-	return postgres.Open(dsn)
-}
+const (
+	defaultTimeout = 10
+)
 
-func GormDB(settings *entities.DatabaseSettings) *gorm.DB {
-	dialector := postgresDialector(settings.GetDSN())
-	db, err := gorm.Open(dialector, &gorm.Config{})
+func MongoClient(settings *entities.DatabaseSettings) *mongo.Database {
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout*time.Second)
+	defer cancel()
+
+	mongoOptions := options.Client().ApplyURI(settings.GetMongoURI())
+	client, err := mongo.Connect(ctx, mongoOptions)
 	if err != nil {
-		logger.Errorf("Could not open connection: %s", err.Error())
 		panic(err)
 	}
 
-	logger.Infof("Using %s database", db.Dialector.Name())
-	return db
+	err = client.Ping(ctx, nil)
+	if err != nil {
+		panic(err)
+	}
+	return client.Database("fastfood_operations_database")
 }

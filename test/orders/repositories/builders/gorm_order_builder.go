@@ -7,14 +7,14 @@ import (
 )
 
 type GormOrderBuilder struct {
-	builders.BaseBuilder[models.GormOrder]
+	builders.BaseBuilder[models.MongoOrder]
 }
 
 func NewGormOrderBuilder() *GormOrderBuilder {
 	return &GormOrderBuilder{}
 }
 
-func (itself *GormOrderBuilder) BuildPaginated() entities.PaginatedEntity[models.GormOrder] {
+func (itself *GormOrderBuilder) BuildPaginated() entities.PaginatedEntity[models.MongoOrder] {
 	data := itself.BuildMany()
 	pagination := builders.NewPaginationBuilder().Build()
 

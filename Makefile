@@ -22,7 +22,7 @@ swagger:
 
 .PHONY: test
 test:
-	.github/scripts/run_tests.sh
+	.github/scripts/tests/run_tests.sh
 
 .PHONY: docker-up
 docker-up:

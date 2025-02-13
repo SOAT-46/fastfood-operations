@@ -3,12 +3,13 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/helpers"
+	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/controllers/helpers"
 	"github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/requests"
 	_ "github.com/SOAT-46/fastfood-operations/internal/orders/adapters/http/responses" // for swagger
 	"github.com/SOAT-46/fastfood-operations/internal/orders/application/usecases/contracts"
 	entities2 "github.com/SOAT-46/fastfood-operations/internal/orders/domain/entities"
 	"github.com/SOAT-46/fastfood-operations/internal/shared/domain/entities"
+	"github.com/SOAT-46/fastfood-operations/internal/shared/infrastructure/controllers"
 	"github.com/SOAT-46/fastfood-operations/internal/shared/infrastructure/controllers/httperrors"
 	"github.com/SOAT-46/fastfood-operations/internal/shared/infrastructure/controllers/query"
 	"github.com/gin-gonic/gin"
@@ -41,7 +42,7 @@ func (itself UpdateOrderController) GetBind() entities.ControllerBind {
 // @Tags orders
 // @Accept application/json
 // @Produce application/json
-// @Param id path int64 true "Order ID"
+// @Param id path string true "Order ID"
 // @Param request body requests.UpdateOrderRequest true "Request body"
 // @Success 200 {object} responses.OrderResponse "OK"
 // @Failure 404 {object} httperrors.ErrorResponse "Not Found"
@@ -49,8 +50,10 @@ func (itself UpdateOrderController) GetBind() entities.ControllerBind {
 // @Router /v1/orders/{id} [put].
 func (itself UpdateOrderController) Execute(gcontext *gin.Context) {
 	itself.gcontext = gcontext
-
 	id := query.GetID(itself.gcontext)
+
+	ctx, cancel := controllers.DefaultTimeout(itself.gcontext)
+	defer cancel()
 
 	var body requests.UpdateOrderRequest
 	if err := gcontext.ShouldBindJSON(&body); err != nil {
@@ -64,11 +67,11 @@ func (itself UpdateOrderController) Execute(gcontext *gin.Context) {
 		OnError:    itself.onError,
 	}
 	order := body.ToDomain(id)
-	itself.useCase.Execute(order, listeners)
+	itself.useCase.Execute(ctx, order, listeners)
 }
 
 func (itself UpdateOrderController) onSuccess(order entities2.Order) {
-	helpers.HandleResponse(itself.gcontext, http.StatusOK, order, itself.onError)
+	helpers.HandleResponse(itself.gcontext, http.StatusOK, order)
 }
 
 func (itself UpdateOrderController) onNotFound() {

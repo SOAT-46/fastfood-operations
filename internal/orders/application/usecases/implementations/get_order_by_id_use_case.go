@@ -1,6 +1,7 @@
 package implementations
 
 import (
+	"context"
 	"errors"
 
 	"github.com/SOAT-46/fastfood-operations/internal/orders/application/usecases/contracts"
@@ -19,8 +20,8 @@ func NewGetOrderByIDUseCase(port gateways.GetOrderByIDPort) *GetOrderByIDUseCase
 }
 
 func (itself *GetOrderByIDUseCase) Execute(
-	id int, listeners contracts.GetOrderByIDListeners) {
-	order, err := itself.port.Execute(id)
+	ctx context.Context, id string, listeners contracts.GetOrderByIDListeners) {
+	order, err := itself.port.Execute(ctx, id)
 	if err != nil {
 		if errors.Is(err, exceptions.ErrOrderNotFound) {
 			listeners.OnNotFound()

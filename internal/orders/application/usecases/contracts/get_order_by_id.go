@@ -1,9 +1,13 @@
 package contracts
 
-import "github.com/SOAT-46/fastfood-operations/internal/orders/domain/entities"
+import (
+	"context"
+
+	"github.com/SOAT-46/fastfood-operations/internal/orders/domain/entities"
+)
 
 type GetOrderByID interface {
-	Execute(id int, listeners GetOrderByIDListeners)
+	Execute(ctx context.Context, id string, listeners GetOrderByIDListeners)
 }
 
 type GetOrderByIDListeners struct {

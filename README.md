@@ -1,5 +1,9 @@
 # fastfood-operations
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=SOAT-46_fastfood-operations&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=SOAT-46_fastfood-operations)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=SOAT-46_fastfood-operations&metric=coverage)](https://sonarcloud.io/summary/new_code?id=SOAT-46_fastfood-operations)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=SOAT-46_fastfood-operations&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=SOAT-46_fastfood-operations)
+
 ## Documentation
 
 For a complete understanding of the functionalities and how to interact with the API, use Postman.

@@ -3,6 +3,7 @@
 package gateways_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -21,7 +22,7 @@ func TestSaveOrderGateway(t *testing.T) {
 		gateway := gateways.NewSaveOrderGateway(repository)
 
 		// when
-		order, err := gateway.Execute(builders.NewCreateOrderInputBuilder().Build())
+		order, err := gateway.Execute(context.Background(), builders.NewCreateOrderInputBuilder().Build())
 
 		// then
 		assert.NotNil(t, order)
@@ -34,7 +35,7 @@ func TestSaveOrderGateway(t *testing.T) {
 		gateway := gateways.NewSaveOrderGateway(repository)
 
 		// when
-		order, err := gateway.Execute(builders.NewCreateOrderInputBuilder().Build())
+		order, err := gateway.Execute(context.Background(), builders.NewCreateOrderInputBuilder().Build())
 
 		// then
 		assert.Nil(t, order)

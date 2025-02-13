@@ -3,6 +3,7 @@
 package gateways_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -23,7 +24,7 @@ func TestGetOrdersGateway(t *testing.T) {
 		gateway := gateways.NewGetOrdersGateway(repository)
 
 		// when
-		orders, err := gateway.Execute(paginatedEntity.Pagination)
+		orders, err := gateway.Execute(context.Background(), paginatedEntity.Pagination)
 
 		// then
 		assert.NotNil(t, orders)
@@ -36,7 +37,7 @@ func TestGetOrdersGateway(t *testing.T) {
 		gateway := gateways.NewGetOrdersGateway(repository)
 
 		// when
-		_, err := gateway.Execute(paginatedEntity.Pagination)
+		_, err := gateway.Execute(context.Background(), paginatedEntity.Pagination)
 
 		// then
 		require.Error(t, err)
